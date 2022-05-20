@@ -1,3 +1,4 @@
+using MLSpace;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -43,15 +44,28 @@ public class WeaponSystem : MonoBehaviour
         Camera cam = Camera.main;
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-        if(Physics.Raycast(ray, out hit, ignoremask))
+        if (Physics.Raycast(ray, out hit, ignoremask))
         {
 
-            if (fire && hit.distance < 50)
+            if (fire && hit.distance < 100)
             {
                 Debug.Log("Fire");
 
                 var hitparticle = Instantiate(hitPaticle, hit.point, Quaternion.identity);
                 Destroy(hitparticle, 0.4f);
+
+
+                EnemySystem e = hit.transform.GetComponentInParent<EnemySystem>();
+                if(e != null)
+                {
+                    BodyColliderScript bcs = hit.collider.GetComponent<BodyColliderScript>();
+                    int[] parts = new int[] { bcs.index };
+
+
+                    e.Hit(parts, ray.direction * 0.5f,20);
+
+                }
+
             }
         }
 
@@ -71,7 +85,7 @@ public class WeaponSystem : MonoBehaviour
             timmer = 0;
 
         }
-        else if(aim == false && handWeapom.active == true)
+        else if (aim == false && handWeapom.active == true)
         {
             timmer += Time.deltaTime;
 
